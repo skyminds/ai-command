@@ -134,6 +134,43 @@ class AiCommand extends WP_CLI_Command {
 			]
 		);
 
+		$server->register_tool(
+			[
+				'name'        => 'set_maintenance_mode',
+				'description' => 'Activates or deactivates WordPress maintenance mode.',
+				'inputSchema' => [
+					'type'       => 'object',
+					'properties' => [
+						'enable' => [
+							'type'        => 'boolean',
+							'description' => 'True to enable maintenance mode, false to disable it.',
+						],
+					],
+					'required'   => [ 'enable' ],
+				],
+				'callable'    => function ( $params ) {
+					$maintenance_file = ABSPATH . '.maintenance';
+					
+					if ( $params['enable'] ) {
+						// Enable maintenance mode
+						$maintenance_content = '<?php $upgrading = ' . time() . '; ?>';
+						if ( file_put_contents( $maintenance_file, $maintenance_content ) === false ) {
+							return 'Failed to enable maintenance mode';
+						}
+						return 'Maintenance mode enabled successfully';
+					} else {
+						// Disable maintenance mode
+						if ( file_exists( $maintenance_file ) ) {
+							if ( unlink( $maintenance_file ) === false ) {
+								return 'Failed to disable maintenance mode';
+							}
+						}
+						return 'Maintenance mode disabled successfully';
+					}
+				},
+			]
+		);
+
 		$result = $client->call_ai_service_with_prompt( $args[0] );
 
 		WP_CLI::success( $result );
