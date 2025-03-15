@@ -217,11 +217,16 @@ class Client {
 				}
 			}
 
-			if ( $new_contents !== $contents ) {
-				return $this->call_ai_service( $new_contents );
-			}
+			// Keep the session open to continue chatting.
 
-			return $text;
+			$response = \cli\prompt( 'Continue' );
+
+			$parts = new Parts();
+			$parts->add_text_part( $response );
+			$content        = new Content( Content_Role::USER, $parts );
+			$new_contents[] = $content;
+			return $this->call_ai_service( $new_contents );
+
 		} catch ( Exception $e ) {
 			WP_CLI::error( $e->getMessage() );
 		}
