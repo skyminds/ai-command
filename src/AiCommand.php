@@ -83,6 +83,37 @@ class AiCommand extends WP_CLI_Command {
 			]
 		);
 
+
+
+		// Register tool to retrieve last N posts in JSON format.
+		$server->register_tool([
+			'name'        => 'list_posts',
+			'description' => 'Retrieves the last N posts.',
+			'inputSchema' => [
+				'type'       => 'object',
+				'properties' => [
+					'count' => [
+						'type'        => 'integer',
+						'description' => 'The number of posts to retrieve.',
+					],
+				],
+				'required'   => ['count'],
+			],
+			'callable'    => function ($params) {
+				$query = new \WP_Query([
+					'posts_per_page' => $params['count'],
+					'post_status'    => 'publish',
+				]);
+				$posts = [];
+				while ($query->have_posts()) {
+					$query->the_post();
+					$posts[] = ['title' => get_the_title(), 'content' => get_the_content()];
+				}
+				wp_reset_postdata();
+				return $posts;
+			},
+		]);
+
 		$server->register_tool(
 			[
 				'name'        => 'greet',
