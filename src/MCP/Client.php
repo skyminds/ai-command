@@ -226,4 +226,49 @@ class Client {
 			WP_CLI::error( $e->getMessage() );
 		}
 	}
+
+	public function generate_command( $prompt ) {
+
+		$service = ai_services()->get_available_service(
+			[
+				'capabilities' => [
+					AI_Capability::TEXT_GENERATION,
+				],
+			]
+		);
+
+		$command = '
+		Return the shell WordPress Cli command to  ' . $prompt . ",
+		and false and no default command is found.
+		Return only the shell command without any description or formatting,
+		without any error redirection or fallback logic.
+		It needs to be in plain text format. \n";
+
+
+		// limit to a specific list of commands
+
+		$candidates = $service
+			->get_model(
+				[
+					'feature'      => 'text-generation',
+					'capabilities' => [
+						AI_Capability::TEXT_GENERATION,
+					],
+				]
+			)
+			->generate_text( [ $command ] );
+
+
+		$cli_command = '';
+
+		foreach ( $candidates->get( 0 )->get_content()->get_parts() as $part ) {
+			if ( $part instanceof Text_Part ) {
+				$cli_command .= $part->get_text();
+			}
+		}
+
+		return $cli_command;
+
+
+	}
 }

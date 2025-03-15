@@ -134,6 +134,42 @@ class AiCommand extends WP_CLI_Command {
 			]
 		);
 
+
+		$server->register_tool(
+			[
+				'name'        => 'generate_command',
+				'description' => 'Generates a WP CLI command.',
+				'inputSchema' => [
+					'type'       => 'object',
+					'properties' => [
+						'prompt' => [
+							'type'        => 'string',
+							'description' => 'Takes a prompt to generate a WP CLI command, then run it.',
+						],
+					],
+					'required'   => [ 'prompt' ],
+				],
+				'callable'    => function ( $params ) use ( $client ) {
+					$command = $client->generate_command( $params['prompt'] );
+					WP_CLI::log( 'command generated' );
+
+					if ( $command == "false" ) {
+						return WP_CLI::error( 'No command generated' );
+					}
+
+//					if ( str_starts_with( $command, 'wp ' ) ) {
+//						$command = substr( $command, 3 );
+//					}
+
+					WP_CLI::log( $command );
+
+//					WP_CLI::log( 'running command' );
+//					WP_CLI::runcommand( $command, [] );
+
+				},
+			]
+		);
+
 		$result = $client->call_ai_service_with_prompt( $args[0] );
 
 		WP_CLI::success( $result );
