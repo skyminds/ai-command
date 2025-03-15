@@ -237,8 +237,8 @@ class Client {
 			]
 		);
 
-		$command = '
-		Return the shell WordPress Cli command to  ' . $prompt . ",
+		$command = "
+		Return the shell WordPress Cli command to  $prompt ,
 		and false and no default command is found.
 		Return only the shell command without any description or formatting,
 		without any error redirection or fallback logic.
@@ -256,7 +256,7 @@ class Client {
 					],
 				]
 			)
-			->generate_text( [ $command ] );
+			->generate_text( $command );
 
 
 		$cli_command = '';
@@ -268,7 +268,5 @@ class Client {
 		}
 
 		return $cli_command;
-
-
 	}
 }

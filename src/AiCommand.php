@@ -151,7 +151,9 @@ class AiCommand extends WP_CLI_Command {
 				],
 				'callable'    => function ( $params ) use ( $client ) {
 					$command = $client->generate_command( $params['prompt'] );
-					WP_CLI::log( 'command generated' );
+					WP_CLI::success( 'command generated' );
+					WP_CLI::success( $command );
+
 
 					if ( $command == "false" ) {
 						return WP_CLI::error( 'No command generated' );
@@ -161,7 +163,6 @@ class AiCommand extends WP_CLI_Command {
 //						$command = substr( $command, 3 );
 //					}
 
-					WP_CLI::log( $command );
 
 //					WP_CLI::log( 'running command' );
 //					WP_CLI::runcommand( $command, [] );
@@ -172,6 +173,6 @@ class AiCommand extends WP_CLI_Command {
 
 		$result = $client->call_ai_service_with_prompt( $args[0] );
 
-		WP_CLI::success( $result );
+//		WP_CLI::success( $result );
 	}
 }
